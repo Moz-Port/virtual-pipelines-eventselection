@@ -71,11 +71,11 @@ jobs:
       - name: checkout repository
         uses: actions/checkout@v2
       - name: Download from skim
-        uses: actions/download-artifacts@v2
+        uses: actions/download-artifact@v2
         with:
           name: skim_ggH
       - name: Download from plot
-        uses: actions/download-artifacts@v2
+        uses: actions/download-artifact@v2
         with:
           name: histograms
       - name: cutflow test
