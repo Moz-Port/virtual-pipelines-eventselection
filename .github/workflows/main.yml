@@ -79,6 +79,6 @@ jobs:
         with:
           name: histograms
       - name: cutflow test
-        run: tests/test_cutflow_ggH.py
+        run: python tests/test_cutflow_ggH.py
       - name: plot test
-        run: tests/test_plot_ggH.py
+        run: python tests/test_cutflow_ggH.py
