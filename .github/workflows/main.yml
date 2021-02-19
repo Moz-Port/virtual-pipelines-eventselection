@@ -2,18 +2,9 @@ name: example
 on: push
 
 jobs:
-  greeting:
-    runs-on: ubuntu-latest
-    steps:
-      - run: echo hello world
-
   build_skim:
-    needs: greeting
     runs-on: ubuntu-latest
-    container: rootproject/root-conda:${{ matrix.version }}
-    strategy:
-      matrix:
-        version: [6.18.04, latest]
+    container: rootproject/root-conda:6.18.04
     steps:
       - name: checkout repository
         uses: actions/checkout@v2
@@ -23,10 +14,9 @@ jobs:
           COMPILER=$(root-config --cxx)
           FLAGS=$(root-config --cflags --libs)
           $COMPILER -g -O3 -Wall -Wextra -Wpedantic -o skim skim.cxx $FLAGS
-
       - uses: actions/upload-artifact@v2
         with:
-          name: skim${{ matrix.version }}
+          name: skim6.18.04
           path: skim
 
 
@@ -46,8 +36,27 @@ jobs:
         run: |
           chmod +x ./skim
           ./skim root://eospublic.cern.ch//eos/root-eos/HiggsTauTauReduced/GluGluToHToTauTau.root skim_ggH.root 19.6 11467.0 0.1
+      - uses: actions/upload-artifact@v2
+        with:
+	  name: skim_ggH
+	  path: skim_ggH.root
+	  
+  plot:
+    needs: skim
+    runs-on: ubuntu-latest
+    container: rootproject/root-conda:6.18.04
+    steps:
+      - name: checkout repository
+        uses: actions/checkout@v2
+
+      - uses: actions/download-artifact@v2
+        with:
+          name: skim_ggH
+
+      - name: histograms
+        run: python histograms.py skim_ggH.root ggH hist_ggH.root
 
       - uses: actions/upload-artifact@v2
         with:
-          name: skim_ggH
-          path: skim_ggH.root
+          name: histograms
+          path: hist_ggH.root
